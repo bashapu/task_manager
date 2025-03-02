@@ -4,7 +4,9 @@ void main() {
   runApp(const MyApp());
 }
 
-enum TaskPriority { low, medium, high } extension PriorityExtension on TaskPriority {
+enum TaskPriority { low, medium, high }
+
+extension PriorityExtension on TaskPriority {
   String get name {
     switch (this) {
       case TaskPriority.low:
@@ -56,14 +58,12 @@ class TaskListScreen extends StatefulWidget {
   const TaskListScreen({Key? key}) : super(key: key);
 
   @override
-  State createState() => _TaskListScreenState();
+  State<TaskListScreen> createState() => _TaskListScreenState();
 }
 
-class _TaskListScreenState extends State {
-  final List _tasks = [];
-  
+class _TaskListScreenState extends State<TaskListScreen> {
+  final List<Task> _tasks = [];
   final TextEditingController _taskController = TextEditingController();
-
   TaskPriority _selectedPriority = TaskPriority.medium;
 
   void _sortTasks() {
@@ -104,7 +104,7 @@ class _TaskListScreenState extends State {
       _tasks.removeAt(index);
     });
   }
-  
+
   @override
   void dispose() {
     _taskController.dispose();
@@ -131,7 +131,7 @@ class _TaskListScreenState extends State {
                   ),
                 ),
                 const SizedBox(width: 10),
-                DropdownButton(
+                DropdownButton<TaskPriority>(
                   value: _selectedPriority,
                   onChanged: (TaskPriority? newValue) {
                     if (newValue != null) {
@@ -140,29 +140,28 @@ class _TaskListScreenState extends State {
                       });
                     }
                   },
-                  items:
-                      TaskPriority.values.map((TaskPriority priority) {
-                        return DropdownMenuItem(
-                          value: priority,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 5,
-                            ),
-                            decoration: BoxDecoration(
-                              color: priority.color.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              priority.name,
-                              style: TextStyle(
-                                color: priority.color,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+                  items: TaskPriority.values.map((TaskPriority priority) {
+                    return DropdownMenuItem(
+                      value: priority,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 5,
+                        ),
+                        decoration: BoxDecoration(
+                          color: priority.color.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          priority.name,
+                          style: TextStyle(
+                            color: priority.color,
+                            fontWeight: FontWeight.bold,
                           ),
-                        );
-                      }).toList(),
+                        ),
+                      ),
+                    );
+                  }).toList(),
                 ),
                 const SizedBox(width: 10),
                 ElevatedButton(
@@ -173,69 +172,66 @@ class _TaskListScreenState extends State {
             ),
           ),
           Expanded(
-            child:
-                _tasks.isEmpty
-                    ? const Center(
-                      child: Text(
-                        'No tasks yet. To get started add a task!',
-                        style: TextStyle(fontSize: 16, color: Colors.grey),
-                      ),
-                    )
-                    : ListView.builder(
-                      itemCount: _tasks.length,
-                      itemBuilder: (context, index) {
-                        final task = _tasks[index];
-                        return Card(
-                          margin: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 8,
-                          ),
-                          elevation: 2,
-                          child: ListTile(
-                            leading: Checkbox(
-                              value: task.isCompleted,
-                              onChanged: (_) => _toggleTaskCompletion(index),
-                            ),
-                            title: Text(
-                              task.name,
-                              style: TextStyle(
-                                decoration:
-                                    task.isCompleted
-                                        ? TextDecoration.lineThrough
-                                        : null,
-                                color:
-                                    task.isCompleted
-                                        ? Colors.grey
-                                        : Colors.black,
-                              ),
-                            ),
-                            subtitle: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 2,
-                              ),
-                              decoration: BoxDecoration(
-                                color: task.priority.color.withOpacity(0.2),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              constraints: const BoxConstraints(maxWidth: 120),
-                              child: Text(
-                                'Priority: ${task.priority.name}',
-                                style: TextStyle(
-                                  color: task.priority.color,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            trailing: IconButton(
-                              icon: const Icon(Icons.delete, color: Colors.red),
-                              onPressed: () => _deleteTask(index),
-                            ),
-                          ),
-                        );
-                      },
+            child: _tasks.isEmpty
+                ? const Center(
+                    child: Text(
+                      'No tasks yet. To get started add a task!',
+                      style: TextStyle(fontSize: 16, color: Colors.grey),
                     ),
+                  )
+                : ListView.builder(
+                    itemCount: _tasks.length,
+                    itemBuilder: (context, index) {
+                      final task = _tasks[index];
+                      return Card(
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        elevation: 2,
+                        child: ListTile(
+                          leading: Checkbox(
+                            value: task.isCompleted,
+                            onChanged: (_) => _toggleTaskCompletion(index),
+                          ),
+                          title: Text(
+                            task.name,
+                            style: TextStyle(
+                              decoration: task.isCompleted
+                                  ? TextDecoration.lineThrough
+                                  : null,
+                              color: task.isCompleted
+                                  ? Colors.grey
+                                  : Colors.black,
+                            ),
+                          ),
+                          subtitle: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: task.priority.color.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            constraints: const BoxConstraints(maxWidth: 120),
+                            child: Text(
+                              'Priority: ${task.priority.name}',
+                              style: TextStyle(
+                                color: task.priority.color,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          trailing: IconButton(
+                            icon: const Icon(Icons.delete, color: Colors.red),
+                            onPressed: () => _deleteTask(index),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
           ),
         ],
       ),
